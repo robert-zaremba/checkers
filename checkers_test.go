@@ -77,3 +77,16 @@ func (s *S) TestIsFalse(c *C) {
 	c.Check(1, Not(IsFalse))
 	c.Check(nil, Not(IsFalse))
 }
+
+func (s *S) TestIsEmpty(c *C) {
+	c.Check(nil, IsEmpty)
+	c.Check(false, IsEmpty)
+	c.Check(0, IsEmpty)
+	c.Check("", IsEmpty)
+	c.Check([]string{}, IsEmpty)
+	c.Check(map[int]string{}, IsEmpty)
+	c.Check(true, Not(IsEmpty))
+	c.Check(1, Not(IsEmpty))
+	c.Check("abc", Not(IsEmpty))
+	c.Check([]string{"abc", "def"}, Not(IsEmpty))
+}

@@ -139,3 +139,39 @@ var IsFalse Checker = &isFalseChecker{
 func (checker *isFalseChecker) Check(params []interface{}, names []string) (result bool, error string) {
 	return params[0] == false, ""
 }
+
+// -----------------------------------------------------------------------
+// IsEmpty checker.
+type isEmptyChecker struct {
+	*CheckerInfo
+}
+
+// Empty asserts that the specified object is empty. I.e. nil, "", false, 0 or a slice with len == 0.
+// For example:
+//
+// c.Assert(v, IsEmpty)
+var IsEmpty Checker = &isEmptyChecker{
+	&CheckerInfo{Name: "IsEmpty", Params: []string{"value"}},
+}
+
+func (checker *isEmptyChecker) Check(params []interface{}, names []string) (result bool, error string) {
+	result = true
+	value := params[0]
+	if value == nil {
+		return
+	} else if value == "" {
+		return
+	} else if value == 0 {
+		return
+	} else if value == false {
+		return
+	}
+
+	objValue := reflect.ValueOf(value)
+	switch objValue.Kind() {
+	case reflect.Slice, reflect.Map:
+		return objValue.Len() == 0, ""
+	}
+
+	return false, ""
+}
