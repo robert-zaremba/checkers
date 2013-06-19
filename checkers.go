@@ -17,7 +17,7 @@ func (c *containsChecker) Check(params []interface{}, names []string) (result bo
 var Contains gocheck.Checker = &containsChecker{&gocheck.CheckerInfo{Name: "Contains", Params: []string{"Container", "Expected to contain"}}}
 
 func equalWithTolerance(a, b, tolerance float64) bool {
-	return math.Fabs(a-b) <= math.Fabs(tolerance)
+	return math.Abs(a-b) <= tolerance
 }
 
 func withinBound(value, lower, upper float64) bool {
