@@ -32,17 +32,6 @@ type y struct {
 	Val int
 }
 
-func (s *S) TestContainsType(c *C) {
-	a := []int{2, 3, 4}
-	c.Check(containsType(a, a[0]), Equals, true)
-	c.Check(containsType(a, a), Equals, false)
-	c.Check(containsType(a, "x"), Equals, false)
-
-	b := []x{x{"1"}, x{"2"}}
-	c.Check(containsType(b, b[0]), Equals, true)
-	c.Check(containsType(b, y{0}), Equals, false)
-}
-
 func (s *S) TestContains(c *C) {
 	a := []int{2, 3, 4}
 	c.Check(a, Contains, a[0])
@@ -62,6 +51,11 @@ func (s *S) TestContains(c *C) {
 	c.Check(b, Contains, x{"2"})
 	c.Check(b, Not(Contains), x{"3"})
 	c.Check(b, Not(Contains), y{0})
+
+	c.Check("1234", Contains, "23")
+	c.Check("1234", Contains, "4")
+	c.Check("1234", Contains, "")
+	c.Check("1234", Not(Contains), "0")
 }
 
 func (s *S) TestIsTrue(c *C) {

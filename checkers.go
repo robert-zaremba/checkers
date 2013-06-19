@@ -1,9 +1,11 @@
 package checkers
 
 import (
+	"fmt"
 	. "launchpad.net/gocheck"
 	"math"
 	"reflect"
+	"strings"
 )
 
 // -----------------------------------------------------------------------
@@ -13,32 +15,34 @@ type containsChecker struct {
 }
 
 func (c *containsChecker) Check(params []interface{}, names []string) (result bool, error string) {
-	return contains(params[0], params[1]), ""
-}
+	container := params[0]
+	value := params[1]
+	vtype := reflect.TypeOf(value)
+	vv := reflect.ValueOf(value)
+	cv := reflect.ValueOf(container)
 
-func contains(container, value interface{}) bool {
-	if containsType(container, value) {
-		switch c := reflect.ValueOf(container); c.Kind() {
-		case reflect.Slice, reflect.Array:
-			for i := 0; i < c.Len(); i++ {
-				if reflect.DeepEqual(c.Index(i).Interface(), value) {
-					return true
-				}
+	switch cv.Kind() {
+	case reflect.Slice, reflect.Array:
+		if cv.Type().Elem() != vtype {
+			return false, ""
+		}
+		for i := 0; i < cv.Len(); i++ {
+			if reflect.DeepEqual(cv.Index(i).Interface(), value) {
+				return true, ""
 			}
 		}
+		return false, ""
+	case reflect.String:
+		if vtype.Kind() != reflect.String {
+			return false, fmt.Sprint("value should have type: ", vtype)
+		}
+		return strings.Contains(cv.String(), vv.String()), ""
 	}
-	return false
+	return false, fmt.Sprint("Unsupported argument types: ", cv.Kind(), vtype)
 }
 
-func containsType(c interface{}, t interface{}) bool {
-	switch v := reflect.ValueOf(c); v.Kind() {
-	case reflect.Slice, reflect.Array:
-		return v.Type().Elem() == reflect.TypeOf(t)
-	}
-	return false
-}
-
-var Contains Checker = &containsChecker{&CheckerInfo{Name: "Contains", Params: []string{"Container", "Expected to contain"}}}
+var Contains Checker = &containsChecker{
+	&CheckerInfo{Name: "Contains", Params: []string{"Container", "Value expected to contain"}}}
 
 // -----------------------------------------------------------------------
 // EqualsWithTolerance checker.
