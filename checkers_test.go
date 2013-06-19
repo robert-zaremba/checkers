@@ -10,7 +10,6 @@ func Test(t *testing.T) {
 }
 
 type S struct {
-
 }
 
 var _ = Suite(&S{})
@@ -63,4 +62,18 @@ func (s *S) TestContains(c *C) {
 	c.Check(b, Contains, x{"2"})
 	c.Check(b, Not(Contains), x{"3"})
 	c.Check(b, Not(Contains), y{0})
+}
+
+func (s *S) TestIsTrue(c *C) {
+	c.Check(true, IsTrue)
+	c.Check(false, Not(IsTrue))
+	c.Check(1, Not(IsTrue))
+	c.Check(nil, Not(IsTrue))
+}
+
+func (s *S) TestIsFalse(c *C) {
+	c.Check(false, IsFalse)
+	c.Check(true, Not(IsFalse))
+	c.Check(1, Not(IsFalse))
+	c.Check(nil, Not(IsFalse))
 }

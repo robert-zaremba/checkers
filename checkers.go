@@ -105,3 +105,37 @@ func (c *betweenChecker) Check(params []interface{}, names []string) (result boo
 }
 
 var Between Checker = &betweenChecker{&CheckerInfo{Name: "Between", Params: []string{"obtained", "lower", "upper"}}}
+
+// -----------------------------------------------------------------------
+// IsTrue checker.
+type isTrueChecker struct {
+	*CheckerInfo
+}
+
+// For example:
+//
+// c.Assert(v, IsTrue)
+var IsTrue Checker = &isTrueChecker{
+	&CheckerInfo{Name: "IsTrue", Params: []string{"value"}},
+}
+
+func (checker *isTrueChecker) Check(params []interface{}, names []string) (result bool, error string) {
+	return params[0] == true, ""
+}
+
+// -----------------------------------------------------------------------
+// IsFalse checker.
+type isFalseChecker struct {
+	*CheckerInfo
+}
+
+// For example:
+//
+// c.Assert(v, IsFalse)
+var IsFalse Checker = &isFalseChecker{
+	&CheckerInfo{Name: "IsFalse", Params: []string{"value"}},
+}
+
+func (checker *isFalseChecker) Check(params []interface{}, names []string) (result bool, error string) {
+	return params[0] == false, ""
+}
