@@ -1,7 +1,7 @@
 package checkers
 
 import (
-	"launchpad.net/gocheck"
+	. "launchpad.net/gocheck"
 	"math"
 	"reflect"
 )
@@ -9,7 +9,7 @@ import (
 // -----------------------------------------------------------------------
 // Contains checker.
 type containsChecker struct {
-	*gocheck.CheckerInfo
+	*CheckerInfo
 }
 
 func (c *containsChecker) Check(params []interface{}, names []string) (result bool, error string) {
@@ -38,7 +38,7 @@ func containsType(c interface{}, t interface{}) bool {
 	return false
 }
 
-var Contains gocheck.Checker = &containsChecker{&gocheck.CheckerInfo{Name: "Contains", Params: []string{"Container", "Expected to contain"}}}
+var Contains Checker = &containsChecker{&CheckerInfo{Name: "Contains", Params: []string{"Container", "Expected to contain"}}}
 
 // -----------------------------------------------------------------------
 // EqualsWithTolerance checker.
@@ -51,7 +51,7 @@ func withinBound(value, lower, upper float64) bool {
 }
 
 type equalsWithToleranceChecker struct {
-	*gocheck.CheckerInfo
+	*CheckerInfo
 }
 
 func (c *equalsWithToleranceChecker) Check(params []interface{}, names []string) (result bool, error string) {
@@ -75,12 +75,12 @@ func (c *equalsWithToleranceChecker) Check(params []interface{}, names []string)
 	return equalWithTolerance(obtained, expected, tolerance), ""
 }
 
-var EqualsWithTolerance gocheck.Checker = &equalsWithToleranceChecker{&gocheck.CheckerInfo{Name: "EqualsWithTolerance", Params: []string{"obtained", "expected", "tolerance"}}}
+var EqualsWithTolerance Checker = &equalsWithToleranceChecker{&CheckerInfo{Name: "EqualsWithTolerance", Params: []string{"obtained", "expected", "tolerance"}}}
 
 // -----------------------------------------------------------------------
 // Between checker.
 type betweenChecker struct {
-	*gocheck.CheckerInfo
+	*CheckerInfo
 }
 
 func (c *betweenChecker) Check(params []interface{}, names []string) (result bool, error string) {
@@ -104,4 +104,4 @@ func (c *betweenChecker) Check(params []interface{}, names []string) (result boo
 	return withinBound(obtained, lower, upper), ""
 }
 
-var Between gocheck.Checker = &betweenChecker{&gocheck.CheckerInfo{Name: "Between", Params: []string{"obtained", "lower", "upper"}}}
+var Between Checker = &betweenChecker{&CheckerInfo{Name: "Between", Params: []string{"obtained", "lower", "upper"}}}
