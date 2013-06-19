@@ -6,6 +6,8 @@ import (
 	"reflect"
 )
 
+// -----------------------------------------------------------------------
+// Contains checker.
 type containsChecker struct {
 	*gocheck.CheckerInfo
 }
@@ -38,6 +40,8 @@ func containsType(c interface{}, t interface{}) bool {
 
 var Contains gocheck.Checker = &containsChecker{&gocheck.CheckerInfo{Name: "Contains", Params: []string{"Container", "Expected to contain"}}}
 
+// -----------------------------------------------------------------------
+// EqualsWithTolerance checker.
 func equalWithTolerance(a, b, tolerance float64) bool {
 	return math.Abs(a-b) <= tolerance
 }
@@ -73,6 +77,8 @@ func (c *equalsWithToleranceChecker) Check(params []interface{}, names []string)
 
 var EqualsWithTolerance gocheck.Checker = &equalsWithToleranceChecker{&gocheck.CheckerInfo{Name: "EqualsWithTolerance", Params: []string{"obtained", "expected", "tolerance"}}}
 
+// -----------------------------------------------------------------------
+// Between checker.
 type betweenChecker struct {
 	*gocheck.CheckerInfo
 }
