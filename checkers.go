@@ -14,6 +14,28 @@ func (c *containsChecker) Check(params []interface{}, names []string) (result bo
 	return contains(params[0], params[1]), ""
 }
 
+func contains(container, value interface{}) bool {
+	if containsType(container, value) {
+		switch c := reflect.ValueOf(container); c.Kind() {
+		case reflect.Slice, reflect.Array:
+			for i := 0; i < c.Len(); i++ {
+				if reflect.DeepEqual(c.Index(i).Interface(), value) {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+func containsType(c interface{}, t interface{}) bool {
+	switch v := reflect.ValueOf(c); v.Kind() {
+	case reflect.Slice, reflect.Array:
+		return v.Type().Elem() == reflect.TypeOf(t)
+	}
+	return false
+}
+
 var Contains gocheck.Checker = &containsChecker{&gocheck.CheckerInfo{Name: "Contains", Params: []string{"Container", "Expected to contain"}}}
 
 func equalWithTolerance(a, b, tolerance float64) bool {
@@ -77,26 +99,3 @@ func (c *betweenChecker) Check(params []interface{}, names []string) (result boo
 }
 
 var Between gocheck.Checker = &betweenChecker{&gocheck.CheckerInfo{Name: "Between", Params: []string{"obtained", "lower", "upper"}}}
-
-func containsType(c interface{}, t interface{}) bool {
-	switch v := reflect.ValueOf(c); v.Kind() {
-	case reflect.Slice, reflect.Array:
-		return v.Type().Elem() == reflect.TypeOf(t)
-	}
-	return false
-}
-
-func contains(container, value interface{}) bool {
-	if containsType(container, value) {
-		switch c := reflect.ValueOf(container); c.Kind() {
-		case reflect.Slice, reflect.Array:
-			for i := 0; i < c.Len(); i++ {
-				if reflect.DeepEqual(c.Index(i).Interface(), value) {
-					return true
-				}
-			}
-		}
-	}
-
-	return false
-}
