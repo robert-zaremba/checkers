@@ -62,18 +62,31 @@ func (c *equalsWithToleranceChecker) Check(params []interface{}, names []string)
 	var (
 		ok                            bool
 		obtained, expected, tolerance float64
+		i                             int64
 	)
 	obtained, ok = params[0].(float64)
 	if !ok {
-		return false, "Obtained value is not a float64"
+		i, ok = params[0].(int64)
+		if !ok {
+			return false, "Obtained value is not a float64 or int64"
+		}
+		obtained = float64(i)
 	}
 	expected, ok = params[1].(float64)
 	if !ok {
-		return false, "Expected value is not a float64"
+		i, ok = params[1].(int64)
+		if !ok {
+			return false, "Expected value is not a float64 or int64"
+		}
+		expected = float64(i)
 	}
 	tolerance, ok = params[2].(float64)
 	if !ok {
-		return false, "Tolerance value is not a float64"
+		i, ok = params[2].(int64)
+		if !ok {
+			return false, "Tolerance value is not a float64 or int64"
+		}
+		tolerance = float64(i)
 	}
 
 	return equalWithTolerance(obtained, expected, tolerance), ""
