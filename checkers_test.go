@@ -84,3 +84,16 @@ func (s *S) TestIsEmpty(c *C) {
 	c.Check("abc", Not(IsEmpty))
 	c.Check([]string{"abc", "def"}, Not(IsEmpty))
 }
+
+func (s *S) TestSliceEquals(c *C) {
+	type Point struct{ X, Y int }
+	c.Check([]string{}, SlicesEquals, []string{})
+	c.Check([]Point{}, SlicesEquals, []Point{})
+	c.Check([]Point{{1, 3}, {2, 10}}, SlicesEquals, []Point{{1, 3}, {2, 10}})
+
+	c.Check([]string{}, Not(SlicesEquals), []int{})
+	c.Check([]int{}, Not(SlicesEquals), []int64{})
+	c.Check([]int{1, 2}, Not(SlicesEquals), []int64{2, 1})
+	c.Check([]int{1, 2}, Not(SlicesEquals), []int64{1, 2, 3})
+	c.Check([]int{1, 2, 3}, Not(SlicesEquals), []int64{1})
+}

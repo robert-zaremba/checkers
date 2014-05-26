@@ -163,14 +163,6 @@ type isEmptyChecker struct {
 	*CheckerInfo
 }
 
-// Empty asserts that the specified object is empty. I.e. nil, "", false, 0 or a slice with len == 0.
-// For example:
-//
-// c.Assert(v, IsEmpty)
-var IsEmpty Checker = &isEmptyChecker{
-	&CheckerInfo{Name: "IsEmpty", Params: []string{"value"}},
-}
-
 func (checker *isEmptyChecker) Check(params []interface{}, names []string) (result bool, error string) {
 	result = true
 	value := params[0]
@@ -192,3 +184,37 @@ func (checker *isEmptyChecker) Check(params []interface{}, names []string) (resu
 
 	return false, ""
 }
+
+// Empty asserts that the specified object is empty. I.e. nil, "", false, 0 or a slice with len == 0.
+// For example:
+//
+// c.Assert(v, IsEmpty)
+var IsEmpty Checker = &isEmptyChecker{
+	&CheckerInfo{Name: "IsEmpty", Params: []string{"value"}},
+}
+
+// -----------------------------------------------------------------------
+// SlicesEquals checker.
+type slicesEquals struct {
+	*CheckerInfo
+}
+
+func (c *slicesEquals) Check(params []interface{}, names []string) (result bool, error string) {
+	s1 := params[0]
+	s2 := params[1]
+	vs1 := reflect.ValueOf(s1)
+	vs2 := reflect.ValueOf(s2)
+
+	if vs1.Kind() != reflect.Slice || vs2.Kind() != reflect.Slice {
+		return false, "Both arguments must be slices"
+	}
+	l := vs1.Len()
+	if l != vs2.Len() {
+		return false, ""
+	}
+	return reflect.DeepEqual(s1, s2), ""
+}
+
+// SliceEquals check if two slices has the same values
+var SlicesEquals Checker = &slicesEquals{
+	&CheckerInfo{Name: "SliceEquals", Params: []string{"slice1", "slice2"}}}
