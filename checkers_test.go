@@ -87,13 +87,26 @@ func (s *S) TestIsEmpty(c *C) {
 
 func (s *S) TestSliceEquals(c *C) {
 	type Point struct{ X, Y int }
-	c.Check([]string{}, SlicesEquals, []string{})
-	c.Check([]Point{}, SlicesEquals, []Point{})
-	c.Check([]Point{{1, 3}, {2, 10}}, SlicesEquals, []Point{{1, 3}, {2, 10}})
+	c.Check([]string{}, SliceEquals, []string{})
+	c.Check([]Point{}, SliceEquals, []Point{})
+	c.Check([]Point{{1, 3}, {2, 10}}, SliceEquals, []Point{{1, 3}, {2, 10}})
 
-	c.Check([]string{}, Not(SlicesEquals), []int{})
-	c.Check([]int{}, Not(SlicesEquals), []int64{})
-	c.Check([]int{1, 2}, Not(SlicesEquals), []int64{2, 1})
-	c.Check([]int{1, 2}, Not(SlicesEquals), []int64{1, 2, 3})
-	c.Check([]int{1, 2, 3}, Not(SlicesEquals), []int64{1})
+	c.Check([]string{}, Not(SliceEquals), []int{})
+	c.Check([]int{}, Not(SliceEquals), []int64{})
+	c.Check([]int{1, 2}, Not(SliceEquals), []int64{2, 1})
+	c.Check([]int{1, 2}, Not(SliceEquals), []int64{1, 2, 3})
+	c.Check([]int{1, 2, 3}, Not(SliceEquals), []int64{1})
+}
+
+func (s *S) TestMapEquals(c *C) {
+	type Point struct{ X, Y int }
+	c.Check(map[int]string{}, MapEquals, map[int]string{})
+	c.Check(map[int]Point{}, MapEquals, map[int]Point{})
+	c.Check(map[int]Point{1: {1, 2}}, MapEquals, map[int]Point{1: {1, 2}})
+
+	c.Check(map[int]string{}, Not(MapEquals), map[int]int{})
+	c.Check(map[int]Point{1: {1, 2}}, Not(MapEquals), map[int]Point{2: {1, 2}})
+	c.Check(map[int]Point{1: {1, 2}}, Not(MapEquals), map[int]Point{1: {2, 2}})
+	c.Check(map[int]Point{1: {1, 2}}, Not(MapEquals), map[int]Point{1: {1, 2}, 2: {1, 2}})
+	c.Check(map[int]Point{1: {1, 2}, 2: {1, 2}}, Not(MapEquals), map[int]Point{1: {1, 2}})
 }

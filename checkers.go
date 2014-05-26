@@ -196,11 +196,11 @@ var IsEmpty Checker = &isEmptyChecker{
 
 // -----------------------------------------------------------------------
 // SlicesEquals checker.
-type slicesEquals struct {
+type sliceEquals struct {
 	*CheckerInfo
 }
 
-func (c *slicesEquals) Check(params []interface{}, names []string) (result bool, error string) {
+func (c *sliceEquals) Check(params []interface{}, names []string) (result bool, error string) {
 	s1 := params[0]
 	s2 := params[1]
 	vs1 := reflect.ValueOf(s1)
@@ -217,5 +217,31 @@ func (c *slicesEquals) Check(params []interface{}, names []string) (result bool,
 }
 
 // SliceEquals check if two slices has the same values
-var SlicesEquals Checker = &slicesEquals{
+var SliceEquals Checker = &sliceEquals{
 	&CheckerInfo{Name: "SliceEquals", Params: []string{"slice1", "slice2"}}}
+
+// -----------------------------------------------------------------------
+// MapsEquals checker.
+type mapEquals struct {
+	*CheckerInfo
+}
+
+func (c *mapEquals) Check(params []interface{}, names []string) (result bool, error string) {
+	s1 := params[0]
+	s2 := params[1]
+	vs1 := reflect.ValueOf(s1)
+	vs2 := reflect.ValueOf(s2)
+
+	if vs1.Kind() != reflect.Map || vs2.Kind() != reflect.Map {
+		return false, "Both arguments must be maps"
+	}
+	l := vs1.Len()
+	if l != vs2.Len() {
+		return false, ""
+	}
+	return reflect.DeepEqual(s1, s2), ""
+}
+
+// MapEquals check if two maps has the same values
+var MapEquals Checker = &mapEquals{
+	&CheckerInfo{Name: "MapEquals", Params: []string{"map1", "map2"}}}
