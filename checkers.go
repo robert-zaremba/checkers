@@ -2,7 +2,7 @@ package checkers
 
 import (
 	"fmt"
-	. "launchpad.net/gocheck"
+	. "gopkg.in/check.v1"
 	"math"
 	"reflect"
 	"strings"
@@ -92,6 +92,7 @@ func (c *equalsWithToleranceChecker) Check(params []interface{}, names []string)
 	return equalWithTolerance(obtained, expected, tolerance), ""
 }
 
+// Check if two numbers are close enough
 var EqualsWithTolerance Checker = &equalsWithToleranceChecker{&CheckerInfo{Name: "EqualsWithTolerance", Params: []string{"obtained", "expected", "tolerance"}}}
 
 // -----------------------------------------------------------------------
