@@ -218,7 +218,7 @@ func (c *sliceEquals) Check(params []interface{}, names []string) (result bool, 
 
 // SliceEquals check if two slices has the same values
 var SliceEquals Checker = &sliceEquals{
-	&CheckerInfo{Name: "SliceEquals", Params: []string{"slice1", "slice2"}}}
+	&CheckerInfo{Name: "SliceEquals", Params: []string{"obtained", "expected"}}}
 
 // -----------------------------------------------------------------------
 // MapsEquals checker.
@@ -244,4 +244,4 @@ func (c *mapEquals) Check(params []interface{}, names []string) (result bool, er
 
 // MapEquals check if two maps has the same values
 var MapEquals Checker = &mapEquals{
-	&CheckerInfo{Name: "MapEquals", Params: []string{"map1", "map2"}}}
+	&CheckerInfo{Name: "MapEquals", Params: []string{"obtained", "expected"}}}
