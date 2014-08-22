@@ -2,11 +2,38 @@ package checkers
 
 import (
 	"fmt"
+	"github.com/davecgh/go-spew/spew"
 	. "gopkg.in/check.v1"
 	"math"
 	"reflect"
 	"strings"
 )
+
+type comment struct {
+	args   []interface{}
+	isSpew bool
+}
+
+// Comment is like Commentf but without formatting string
+func Comment(args ...interface{}) CommentInterface {
+	return comment{args, false}
+}
+
+// CommentSpew is like Commentf but preatty print all args using spew
+func CommentSpew(args ...interface{}) CommentInterface {
+	return comment{args, true}
+}
+
+func (c comment) CheckCommentString() string {
+	if c.isSpew {
+		args := make([]string, len(c.args), len(c.args))
+		for i := range c.args {
+			args[i] = spew.Sdump(c.args[i])
+		}
+		return strings.Join(args, " ")
+	}
+	return fmt.Sprint(c.args...)
+}
 
 // -----------------------------------------------------------------------
 // Contains checker.
