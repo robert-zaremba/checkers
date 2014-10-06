@@ -3,7 +3,7 @@ package checkers
 import (
 	"fmt"
 	"github.com/davecgh/go-spew/spew"
-	. "gopkg.in/check.v1"
+	gc "gopkg.in/check.v1"
 	"math"
 	"reflect"
 	"strings"
@@ -15,12 +15,12 @@ type comment struct {
 }
 
 // Comment is like Commentf but without formatting string
-func Comment(args ...interface{}) CommentInterface {
+func Comment(args ...interface{}) gc.CommentInterface {
 	return comment{args, false}
 }
 
 // CommentSpew is like Commentf but preatty print all args using spew
-func CommentSpew(args ...interface{}) CommentInterface {
+func CommentSpew(args ...interface{}) gc.CommentInterface {
 	return comment{args, true}
 }
 
@@ -45,7 +45,7 @@ func withinBound(value, lower, upper float64) bool {
 }
 
 type equalsWithToleranceChecker struct {
-	*CheckerInfo
+	*gc.CheckerInfo
 }
 
 func (c *equalsWithToleranceChecker) Check(params []interface{}, names []string) (result bool, error string) {
@@ -83,15 +83,15 @@ func (c *equalsWithToleranceChecker) Check(params []interface{}, names []string)
 }
 
 // Check if two numbers are close enough
-var EqualsWithTolerance Checker = &equalsWithToleranceChecker{&CheckerInfo{Name: "EqualsWithTolerance", Params: []string{"obtained", "expected", "tolerance"}}}
+var EqualsWithTolerance gc.Checker = &equalsWithToleranceChecker{&gc.CheckerInfo{Name: "EqualsWithTolerance", Params: []string{"obtained", "expected", "tolerance"}}}
 
 // -----------------------------------------------------------------------
 type betweenChecker struct {
-	*CheckerInfo
+	*gc.CheckerInfo
 }
 
 // Between check if a numeric values is between two other values
-var Between Checker = &betweenChecker{&CheckerInfo{Name: "Between", Params: []string{"obtained", "lower", "upper"}}}
+var Between gc.Checker = &betweenChecker{&gc.CheckerInfo{Name: "Between", Params: []string{"obtained", "lower", "upper"}}}
 
 func (c *betweenChecker) Check(params []interface{}, names []string) (result bool, error string) {
 	var (
@@ -116,14 +116,14 @@ func (c *betweenChecker) Check(params []interface{}, names []string) (result boo
 
 // -----------------------------------------------------------------------
 type isTrueChecker struct {
-	*CheckerInfo
+	*gc.CheckerInfo
 }
 
 // For example:
 //
 // c.Assert(v, IsTrue)
-var IsTrue Checker = &isTrueChecker{
-	&CheckerInfo{Name: "IsTrue", Params: []string{"value"}},
+var IsTrue gc.Checker = &isTrueChecker{
+	&gc.CheckerInfo{Name: "IsTrue", Params: []string{"value"}},
 }
 
 func (checker *isTrueChecker) Check(params []interface{}, names []string) (result bool, error string) {
@@ -133,14 +133,14 @@ func (checker *isTrueChecker) Check(params []interface{}, names []string) (resul
 // -----------------------------------------------------------------------
 // IsFalse checker.
 type isFalseChecker struct {
-	*CheckerInfo
+	*gc.CheckerInfo
 }
 
 // For example:
 //
 // c.Assert(v, IsFalse)
-var IsFalse Checker = &isFalseChecker{
-	&CheckerInfo{Name: "IsFalse", Params: []string{"value"}},
+var IsFalse gc.Checker = &isFalseChecker{
+	&gc.CheckerInfo{Name: "IsFalse", Params: []string{"value"}},
 }
 
 func (checker *isFalseChecker) Check(params []interface{}, names []string) (result bool, error string) {
@@ -150,7 +150,7 @@ func (checker *isFalseChecker) Check(params []interface{}, names []string) (resu
 // -----------------------------------------------------------------------
 
 type isEmptyChecker struct {
-	*CheckerInfo
+	*gc.CheckerInfo
 }
 
 func (checker *isEmptyChecker) Check(params []interface{}, names []string) (result bool, error string) {
@@ -179,22 +179,22 @@ func (checker *isEmptyChecker) Check(params []interface{}, names []string) (resu
 // For example:
 //
 // c.Assert(v, IsEmpty)
-var IsEmpty Checker = &isEmptyChecker{
-	&CheckerInfo{Name: "IsEmpty", Params: []string{"value"}},
+var IsEmpty gc.Checker = &isEmptyChecker{
+	&gc.CheckerInfo{Name: "IsEmpty", Params: []string{"value"}},
 }
 
 // -----------------------------------------------------------------------
 
 type satisfiesChecker struct {
-	*CheckerInfo
+	*gc.CheckerInfo
 }
 
 // Satisfies checks whether a value causes the argument
 // function to return true. The function must be of
 // type func(T) bool where the value being checked
 // is assignable to T.
-var Satisfies Checker = &satisfiesChecker{
-	&CheckerInfo{
+var Satisfies gc.Checker = &satisfiesChecker{
+	&gc.CheckerInfo{
 		Name:   "Satisfies",
 		Params: []string{"obtained", "func(T) bool"},
 	},
@@ -236,12 +236,12 @@ func canBeNil(t reflect.Type) bool {
 
 // -----------------------------------------------------------------------
 type hasPrefixChecker struct {
-	*CheckerInfo
+	*gc.CheckerInfo
 }
 
 // HasPrefix checker for checking strings
-var HasPrefix Checker = &hasPrefixChecker{
-	&CheckerInfo{Name: "HasPrefix", Params: []string{"obtained", "expected"}},
+var HasPrefix gc.Checker = &hasPrefixChecker{
+	&gc.CheckerInfo{Name: "HasPrefix", Params: []string{"obtained", "expected"}},
 }
 
 func (checker *hasPrefixChecker) Check(params []interface{}, names []string) (result bool, error string) {
@@ -260,12 +260,12 @@ func (checker *hasPrefixChecker) Check(params []interface{}, names []string) (re
 
 // -----------------------------------------------------------------------
 type hasSuffixChecker struct {
-	*CheckerInfo
+	*gc.CheckerInfo
 }
 
 // HasSuffix Checker
-var HasSuffix Checker = &hasSuffixChecker{
-	&CheckerInfo{Name: "HasSuffix", Params: []string{"obtained", "expected"}},
+var HasSuffix gc.Checker = &hasSuffixChecker{
+	&gc.CheckerInfo{Name: "HasSuffix", Params: []string{"obtained", "expected"}},
 }
 
 func (checker *hasSuffixChecker) Check(params []interface{}, names []string) (result bool, error string) {

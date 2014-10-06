@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"reflect"
 
-	. "gopkg.in/check.v1"
+	gc "gopkg.in/check.v1"
 	"strings"
 )
 
 type containsChecker struct {
-	*CheckerInfo
+	*gc.CheckerInfo
 }
 
 func (c *containsChecker) Check(params []interface{}, names []string) (result bool, error string) {
@@ -40,12 +40,12 @@ func (c *containsChecker) Check(params []interface{}, names []string) (result bo
 }
 
 // Contains checker checks if an array, slice or string contains an element
-var Contains Checker = &containsChecker{
-	&CheckerInfo{Name: "Contains", Params: []string{"Container", "Value expected to contain"}}}
+var Contains gc.Checker = &containsChecker{
+	&gc.CheckerInfo{Name: "Contains", Params: []string{"Container", "Value expected to contain"}}}
 
 // -----------------------------------------------------------------------
 type sliceEquals struct {
-	*CheckerInfo
+	*gc.CheckerInfo
 }
 
 func (c *sliceEquals) Check(params []interface{}, names []string) (result bool, error string) {
@@ -65,12 +65,12 @@ func (c *sliceEquals) Check(params []interface{}, names []string) (result bool, 
 }
 
 // SliceEquals check if two slices has the same values
-var SliceEquals Checker = &sliceEquals{
-	&CheckerInfo{Name: "SliceEquals", Params: []string{"obtained", "expected"}}}
+var SliceEquals gc.Checker = &sliceEquals{
+	&gc.CheckerInfo{Name: "SliceEquals", Params: []string{"obtained", "expected"}}}
 
 // -----------------------------------------------------------------------
 type mapEquals struct {
-	*CheckerInfo
+	*gc.CheckerInfo
 }
 
 func (c *mapEquals) Check(params []interface{}, names []string) (result bool, error string) {
@@ -90,20 +90,20 @@ func (c *mapEquals) Check(params []interface{}, names []string) (result bool, er
 }
 
 // MapEquals check if two maps has the same values
-var MapEquals Checker = &mapEquals{
-	&CheckerInfo{Name: "MapEquals", Params: []string{"obtained", "expected"}}}
+var MapEquals gc.Checker = &mapEquals{
+	&gc.CheckerInfo{Name: "MapEquals", Params: []string{"obtained", "expected"}}}
 
 // -----------------------------------------------------------------------
 
 type sameContents struct {
-	*CheckerInfo
+	*gc.CheckerInfo
 }
 
 // SameContents checks that the obtained slice contains all the values (and
 // same number of values) of the expected slice and vice versa, without respect
 // to order or duplicates. Uses DeepEquals on mapped contents to compare.
-var SameContents Checker = &sameContents{
-	&CheckerInfo{Name: "SameContents", Params: []string{"obtained", "expected"}},
+var SameContents gc.Checker = &sameContents{
+	&gc.CheckerInfo{Name: "SameContents", Params: []string{"obtained", "expected"}},
 }
 
 func (checker *sameContents) Check(params []interface{}, names []string) (result bool, error string) {

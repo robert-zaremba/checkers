@@ -2,11 +2,21 @@
 Package checkers is an extension to github.com/go-check/check library.
 It provides additional usefull checkers:
 
+  * Between - check if a number is between given 2 other numbers
   * Contains (check if a slice/array/string contains specified element)
+  * DoesNotExist
+  * DurationLessThan
   * EqualsWithTolerance - check if two numbers are "close enough"
-  * IsTrue
+  * HasPrefix, HasSuffix
+  * IsDirectory
   * IsEmpty - check if specified object is empty (nil, [], {}, "", 0)
-  * SliceEquals - check if 2 slices contain the same elements
+  * IsNonEmptyFile
+  * IsSymlink, SymlinkDoesNotExist
+  * IsTrue, IsFalse
   * MapEquals - check if 2 maps contain the same elements
+  * SameContents
+  * SamePath
+  * Satisfies
+  * SliceEquals - check if 2 slices contain the same elements
 */
 package checkers
