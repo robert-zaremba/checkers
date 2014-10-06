@@ -36,43 +36,6 @@ func (c comment) CheckCommentString() string {
 }
 
 // -----------------------------------------------------------------------
-// Contains checker.
-type containsChecker struct {
-	*CheckerInfo
-}
-
-func (c *containsChecker) Check(params []interface{}, names []string) (result bool, error string) {
-	container := params[0]
-	value := params[1]
-	vtype := reflect.TypeOf(value)
-	vv := reflect.ValueOf(value)
-	cv := reflect.ValueOf(container)
-
-	switch cv.Kind() {
-	case reflect.Slice, reflect.Array:
-		if cv.Type().Elem() != vtype {
-			return false, ""
-		}
-		for i := 0; i < cv.Len(); i++ {
-			if reflect.DeepEqual(cv.Index(i).Interface(), value) {
-				return true, ""
-			}
-		}
-		return false, ""
-	case reflect.String:
-		if vtype.Kind() != reflect.String {
-			return false, fmt.Sprint("value should have type: ", vtype)
-		}
-		return strings.Contains(cv.String(), vv.String()), ""
-	}
-	return false, fmt.Sprint("Unsupported argument types: ", cv.Kind(), vtype)
-}
-
-var Contains Checker = &containsChecker{
-	&CheckerInfo{Name: "Contains", Params: []string{"Container", "Value expected to contain"}}}
-
-// -----------------------------------------------------------------------
-// EqualsWithTolerance checker.
 func equalWithTolerance(a, b, tolerance float64) bool {
 	return math.Abs(a-b) <= tolerance
 }
@@ -123,10 +86,12 @@ func (c *equalsWithToleranceChecker) Check(params []interface{}, names []string)
 var EqualsWithTolerance Checker = &equalsWithToleranceChecker{&CheckerInfo{Name: "EqualsWithTolerance", Params: []string{"obtained", "expected", "tolerance"}}}
 
 // -----------------------------------------------------------------------
-// Between checker.
 type betweenChecker struct {
 	*CheckerInfo
 }
+
+// Between check if a numeric values is between two other values
+var Between Checker = &betweenChecker{&CheckerInfo{Name: "Between", Params: []string{"obtained", "lower", "upper"}}}
 
 func (c *betweenChecker) Check(params []interface{}, names []string) (result bool, error string) {
 	var (
@@ -149,10 +114,7 @@ func (c *betweenChecker) Check(params []interface{}, names []string) (result boo
 	return withinBound(obtained, lower, upper), ""
 }
 
-var Between Checker = &betweenChecker{&CheckerInfo{Name: "Between", Params: []string{"obtained", "lower", "upper"}}}
-
 // -----------------------------------------------------------------------
-// IsTrue checker.
 type isTrueChecker struct {
 	*CheckerInfo
 }
@@ -186,7 +148,7 @@ func (checker *isFalseChecker) Check(params []interface{}, names []string) (resu
 }
 
 // -----------------------------------------------------------------------
-// IsEmpty checker.
+
 type isEmptyChecker struct {
 	*CheckerInfo
 }
@@ -222,53 +184,100 @@ var IsEmpty Checker = &isEmptyChecker{
 }
 
 // -----------------------------------------------------------------------
-// SlicesEquals checker.
-type sliceEquals struct {
+
+type satisfiesChecker struct {
 	*CheckerInfo
 }
 
-func (c *sliceEquals) Check(params []interface{}, names []string) (result bool, error string) {
-	s1 := params[0]
-	s2 := params[1]
-	vs1 := reflect.ValueOf(s1)
-	vs2 := reflect.ValueOf(s2)
-
-	if vs1.Kind() != reflect.Slice || vs2.Kind() != reflect.Slice {
-		return false, "Both arguments must be slices"
-	}
-	l := vs1.Len()
-	if l != vs2.Len() {
-		return false, ""
-	}
-	return reflect.DeepEqual(s1, s2), ""
+// Satisfies checks whether a value causes the argument
+// function to return true. The function must be of
+// type func(T) bool where the value being checked
+// is assignable to T.
+var Satisfies Checker = &satisfiesChecker{
+	&CheckerInfo{
+		Name:   "Satisfies",
+		Params: []string{"obtained", "func(T) bool"},
+	},
 }
 
-// SliceEquals check if two slices has the same values
-var SliceEquals Checker = &sliceEquals{
-	&CheckerInfo{Name: "SliceEquals", Params: []string{"obtained", "expected"}}}
+func (checker *satisfiesChecker) Check(params []interface{}, names []string) (result bool, error string) {
+	f := reflect.ValueOf(params[1])
+	ft := f.Type()
+	if ft.Kind() != reflect.Func ||
+		ft.NumIn() != 1 ||
+		ft.NumOut() != 1 ||
+		ft.Out(0) != reflect.TypeOf(true) {
+		return false, fmt.Sprintf("expected func(T) bool, got %s", ft)
+	}
+	v := reflect.ValueOf(params[0])
+	if !v.IsValid() {
+		if !canBeNil(ft.In(0)) {
+			return false, fmt.Sprintf("cannot assign nil to argument %T", ft.In(0))
+		}
+		v = reflect.Zero(ft.In(0))
+	}
+	if !v.Type().AssignableTo(ft.In(0)) {
+		return false, fmt.Sprintf("wrong argument type %s for %s", v.Type(), ft)
+	}
+	return f.Call([]reflect.Value{v})[0].Interface().(bool), ""
+}
+func canBeNil(t reflect.Type) bool {
+	switch t.Kind() {
+	case reflect.Chan,
+		reflect.Func,
+		reflect.Interface,
+		reflect.Map,
+		reflect.Ptr,
+		reflect.Slice:
+		return true
+	}
+	return false
+}
 
 // -----------------------------------------------------------------------
-// MapsEquals checker.
-type mapEquals struct {
+type hasPrefixChecker struct {
 	*CheckerInfo
 }
 
-func (c *mapEquals) Check(params []interface{}, names []string) (result bool, error string) {
-	s1 := params[0]
-	s2 := params[1]
-	vs1 := reflect.ValueOf(s1)
-	vs2 := reflect.ValueOf(s2)
-
-	if vs1.Kind() != reflect.Map || vs2.Kind() != reflect.Map {
-		return false, "Both arguments must be maps"
-	}
-	l := vs1.Len()
-	if l != vs2.Len() {
-		return false, ""
-	}
-	return reflect.DeepEqual(s1, s2), ""
+// HasPrefix checker for checking strings
+var HasPrefix Checker = &hasPrefixChecker{
+	&CheckerInfo{Name: "HasPrefix", Params: []string{"obtained", "expected"}},
 }
 
-// MapEquals check if two maps has the same values
-var MapEquals Checker = &mapEquals{
-	&CheckerInfo{Name: "MapEquals", Params: []string{"obtained", "expected"}}}
+func (checker *hasPrefixChecker) Check(params []interface{}, names []string) (result bool, error string) {
+	expected, ok := params[1].(string)
+	if !ok {
+		return false, "expected must be a string"
+	}
+
+	obtained, isString := stringOrStringer(params[0])
+	if isString {
+		return strings.HasPrefix(obtained, expected), ""
+	}
+
+	return false, "Obtained value is not a string and has no .String()"
+}
+
+// -----------------------------------------------------------------------
+type hasSuffixChecker struct {
+	*CheckerInfo
+}
+
+// HasSuffix Checker
+var HasSuffix Checker = &hasSuffixChecker{
+	&CheckerInfo{Name: "HasSuffix", Params: []string{"obtained", "expected"}},
+}
+
+func (checker *hasSuffixChecker) Check(params []interface{}, names []string) (result bool, error string) {
+	expected, ok := params[1].(string)
+	if !ok {
+		return false, "expected must be a string"
+	}
+
+	obtained, isString := stringOrStringer(params[0])
+	if isString {
+		return strings.HasSuffix(obtained, expected), ""
+	}
+
+	return false, "Obtained value is not a string and has no .String()"
+}

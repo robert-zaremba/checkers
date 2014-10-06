@@ -1,5 +1,5 @@
 /*
-This package is an extension to github.com/go-check/check library.
+Package checkers is an extension to github.com/go-check/check library.
 It provides additional usefull checkers:
 
   * Contains (check if a slice/array/string contains specified element)

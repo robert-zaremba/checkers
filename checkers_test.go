@@ -1,18 +1,12 @@
 package checkers
 
 import (
+	"errors"
 	. "gopkg.in/check.v1"
-	"testing"
+	"os"
 )
 
-func Test(t *testing.T) {
-	TestingT(t)
-}
-
-type S struct {
-}
-
-var _ = Suite(&S{})
+type S struct{}
 
 func (s *S) TestToleranceEquality(c *C) {
 	c.Check(1.0, EqualsWithTolerance, 1.25, 0.5)
@@ -30,32 +24,6 @@ type x struct {
 
 type y struct {
 	Val int
-}
-
-func (s *S) TestContains(c *C) {
-	a := []int{2, 3, 4}
-	c.Check(a, Contains, a[0])
-	c.Check(a, Contains, a[1])
-	c.Check(a, Contains, a[2])
-	c.Check(a, Contains, 2)
-	c.Check(a, Contains, 3)
-	c.Check(a, Contains, 4)
-	c.Check(a, Not(Contains), 5)
-	c.Check(a, Not(Contains), a)
-	c.Check(a, Not(Contains), "x")
-
-	b := []x{x{"1"}, x{"2"}}
-	c.Check(b, Contains, b[0])
-	c.Check(b, Contains, b[1])
-	c.Check(b, Contains, x{"1"})
-	c.Check(b, Contains, x{"2"})
-	c.Check(b, Not(Contains), x{"3"})
-	c.Check(b, Not(Contains), y{0})
-
-	c.Check("1234", Contains, "23")
-	c.Check("1234", Contains, "4")
-	c.Check("1234", Contains, "")
-	c.Check("1234", Not(Contains), "0")
 }
 
 func (s *S) TestIsTrue(c *C) {
@@ -85,28 +53,81 @@ func (s *S) TestIsEmpty(c *C) {
 	c.Check([]string{"abc", "def"}, Not(IsEmpty))
 }
 
-func (s *S) TestSliceEquals(c *C) {
-	type Point struct{ X, Y int }
-	c.Check([]string{}, SliceEquals, []string{})
-	c.Check([]Point{}, SliceEquals, []Point{})
-	c.Check([]Point{{1, 3}, {2, 10}}, SliceEquals, []Point{{1, 3}, {2, 10}})
-
-	c.Check([]string{}, Not(SliceEquals), []int{})
-	c.Check([]int{}, Not(SliceEquals), []int64{})
-	c.Check([]int{1, 2}, Not(SliceEquals), []int64{2, 1})
-	c.Check([]int{1, 2}, Not(SliceEquals), []int64{1, 2, 3})
-	c.Check([]int{1, 2, 3}, Not(SliceEquals), []int64{1})
+func is42(i int) bool {
+	return i == 42
 }
 
-func (s *S) TestMapEquals(c *C) {
-	type Point struct{ X, Y int }
-	c.Check(map[int]string{}, MapEquals, map[int]string{})
-	c.Check(map[int]Point{}, MapEquals, map[int]Point{})
-	c.Check(map[int]Point{1: {1, 2}}, MapEquals, map[int]Point{1: {1, 2}})
+var satisfiesTests = []struct {
+	f      interface{}
+	arg    interface{}
+	result bool
+	msg    string
+}{{
+	f:      is42,
+	arg:    42,
+	result: true,
+}, {
+	f:      is42,
+	arg:    41,
+	result: false,
+}, {
+	f:      is42,
+	arg:    "",
+	result: false,
+	msg:    "wrong argument type string for func(int) bool",
+}, {
+	f:      os.IsNotExist,
+	arg:    errors.New("foo"),
+	result: false,
+}, {
+	f:      os.IsNotExist,
+	arg:    os.ErrNotExist,
+	result: true,
+}, {
+	f:      os.IsNotExist,
+	arg:    nil,
+	result: false,
+}, {
+	f:      func(chan int) bool { return true },
+	arg:    nil,
+	result: true,
+}, {
+	f:      func(func()) bool { return true },
+	arg:    nil,
+	result: true,
+}, {
+	f:      func(interface{}) bool { return true },
+	arg:    nil,
+	result: true,
+}, {
+	f:      func(map[string]bool) bool { return true },
+	arg:    nil,
+	result: true,
+}, {
+	f:      func(*int) bool { return true },
+	arg:    nil,
+	result: true,
+}, {
+	f:      func([]string) bool { return true },
+	arg:    nil,
+	result: true,
+}}
 
-	c.Check(map[int]string{}, Not(MapEquals), map[int]int{})
-	c.Check(map[int]Point{1: {1, 2}}, Not(MapEquals), map[int]Point{2: {1, 2}})
-	c.Check(map[int]Point{1: {1, 2}}, Not(MapEquals), map[int]Point{1: {2, 2}})
-	c.Check(map[int]Point{1: {1, 2}}, Not(MapEquals), map[int]Point{1: {1, 2}, 2: {1, 2}})
-	c.Check(map[int]Point{1: {1, 2}, 2: {1, 2}}, Not(MapEquals), map[int]Point{1: {1, 2}})
+func (s *S) TestSatisfies(c *C) {
+	for i, test := range satisfiesTests {
+		c.Logf("test %d. %T %T", i, test.f, test.arg)
+		result, msg := Satisfies.Check([]interface{}{test.arg, test.f}, nil)
+		c.Check(result, Equals, test.result)
+		c.Check(msg, Equals, test.msg)
+	}
+}
+
+func (s *S) TestHasPrefix(c *C) {
+	c.Assert("foo bar", HasPrefix, "foo")
+	c.Assert("foo bar", Not(HasPrefix), "omg")
+}
+
+func (s *S) TestHasSuffix(c *C) {
+	c.Assert("foo bar", HasSuffix, "bar")
+	c.Assert("foo bar", Not(HasSuffix), "omg")
 }
