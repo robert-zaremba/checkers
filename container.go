@@ -5,6 +5,7 @@ import (
 	"reflect"
 
 	gc "gopkg.in/check.v1"
+	"sort"
 	"strings"
 )
 
@@ -152,5 +153,27 @@ func (checker *sameContents) Check(params []interface{}, names []string) (result
 }
 
 // -----------------------------------------------------------------------
+
+type isSorted struct {
+	*gc.CheckerInfo
+}
+
+// IsSorted checks if given container, implementing `sort.Interface`, is ordered.
+var IsSorted gc.Checker = &isSorted{
+	&gc.CheckerInfo{Name: "IsSorted", Params: []string{"container"}},
+}
+
+func (checker *isSorted) Check(params []interface{}, names []string) (result bool, error string) {
+	container, ok := params[0].(sort.Interface)
+	if !ok {
+		return false, "value object must implement `sort.Interface`"
+	}
+	for i := 0; i < container.Len()-1; i++ {
+		if container.Less(i+1, i) {
+			return false, fmt.Sprint("value is not ordered at index ", i+1)
+		}
+	}
+	return true, ""
+}
 
 // -----------------------------------------------------------------------

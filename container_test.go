@@ -2,6 +2,7 @@ package checkers
 
 import (
 	. "gopkg.in/check.v1"
+	"sort"
 )
 
 type ContainerSuite struct{}
@@ -141,4 +142,16 @@ func (s *ContainerSuite) TestSameContents(c *C) {
 	}, []string{})
 	c.Check(res, IsFalse)
 	c.Check(err, Not(Equals), "")
+}
+
+func (s *ContainerSuite) TestIsSorted(c *C) {
+	var a sort.IntSlice
+	c.Check(a, IsSorted)
+
+	a = []int{2, 3, 4}
+	c.Check(a, IsSorted)
+
+	a = []int{-2, 0, 4}
+	c.Check(a, IsSorted)
+
 }
