@@ -1,8 +1,9 @@
 package checkers
 
 import (
-	. "gopkg.in/check.v1"
 	"sort"
+
+	. "gopkg.in/check.v1"
 )
 
 type ContainerSuite struct{}
@@ -31,6 +32,32 @@ func (s *ContainerSuite) TestContains(c *C) {
 	c.Check("1234", Contains, "4")
 	c.Check("1234", Contains, "")
 	c.Check("1234", Not(Contains), "0")
+}
+
+func (s *ContainerSuite) TestIsIn(c *C) {
+	a := []int{2, 3, 4}
+	c.Check(a[0], IsIn, a)
+	c.Check(a[1], IsIn, a)
+	c.Check(a[2], IsIn, a)
+	c.Check(2, IsIn, a)
+	c.Check(3, IsIn, a)
+	c.Check(4, IsIn, a)
+	c.Check(5, Not(IsIn), a)
+	c.Check(a, Not(IsIn), a)
+	c.Check("x", Not(IsIn), a)
+
+	b := []x{x{"1"}, x{"2"}}
+	c.Check(b[0], IsIn, b)
+	c.Check(b[1], IsIn, b)
+	c.Check(x{"1"}, IsIn, b)
+	c.Check(x{"2"}, IsIn, b)
+	c.Check(x{"3"}, Not(IsIn), b)
+	c.Check(y{0}, Not(IsIn), b)
+
+	c.Check("23", IsIn, "1234")
+	c.Check("4", IsIn, "1234")
+	c.Check("", IsIn, "1234")
+	c.Check("0", Not(IsIn), "1234")
 }
 
 func (s *ContainerSuite) TestSliceEquals(c *C) {

@@ -4,9 +4,10 @@ import (
 	"fmt"
 	"reflect"
 
-	gc "gopkg.in/check.v1"
 	"sort"
 	"strings"
+
+	gc "gopkg.in/check.v1"
 )
 
 type containsChecker struct {
@@ -43,6 +44,18 @@ func (c *containsChecker) Check(params []interface{}, names []string) (result bo
 // Contains checker checks if an array, slice or string contains an element
 var Contains gc.Checker = &containsChecker{
 	&gc.CheckerInfo{Name: "Contains", Params: []string{"Container", "Value expected to contain"}}}
+
+// ----------------------------------------------------------------------- type
+type isInChecker struct{ *gc.CheckerInfo }
+
+func (c *isInChecker) Check(params []interface{}, names []string) (result bool, error string) {
+	cBis := containsChecker{CheckerInfo: c.CheckerInfo}
+	return cBis.Check([]interface{}{params[1], params[0]}, names)
+}
+
+// IsIn checker checks if an element belongs to an array, slice or a string
+var IsIn gc.Checker = &isInChecker{
+	&gc.CheckerInfo{Name: "IsIn", Params: []string{"Element", "Container"}}}
 
 // -----------------------------------------------------------------------
 type sliceEquals struct {

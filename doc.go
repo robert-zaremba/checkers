@@ -4,6 +4,7 @@ It provides additional usefull checkers:
 
   * Between - check if a number is between given 2 other numbers
   * Contains (check if a slice/array/string contains specified element)
+  * IsIn (check if an element is in a slice/array/string)
   * DoesNotExist
   * DurationLessThan
   * EqualsWithTolerance - check if two numbers are "close enough"
