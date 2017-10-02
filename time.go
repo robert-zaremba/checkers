@@ -62,3 +62,34 @@ func (checker *durationLessThanChecker) Check(params []interface{}, names []stri
 	}
 	return obtained.Nanoseconds() < expected.Nanoseconds(), ""
 }
+
+// -----------------------------------------------------------------------
+type withinDuration struct {
+	*gc.CheckerInfo
+}
+
+func (checker *withinDuration) Check(params []interface{}, names []string) (result bool, error string) {
+	obtained, ok := params[0].(time.Time)
+	if !ok {
+		return false, "obtained value type must be time.Time"
+	}
+	expected, ok := params[1].(time.Time)
+	if !ok {
+		return false, "expected value type must be time.Time"
+	}
+	maxDiff, ok := params[2].(time.Duration)
+	if !ok {
+		return false, "max_diff value type must be time.Duration"
+	}
+	dt := expected.Sub(obtained)
+	if dt >= -maxDiff && dt <= maxDiff {
+		return true, ""
+	}
+	return false, "" //fmt.Sprintf("Too big time difference: %v,  %v", dt)
+
+}
+
+// WithinDuration checkes if time between obtained and expected is within duration
+var WithinDuration gc.Checker = &withinDuration{
+	&gc.CheckerInfo{Name: "WithinDuration", Params: []string{"obtained", "expected", "max_diff"}},
+}

@@ -8,6 +8,7 @@ It provides additional usefull checkers:
   * IsIn (check if an element is in a slice/array/string)
   * DoesNotExist
   * DurationLessThan
+  * WithinDuration
   * EqualsWithTolerance - check if two numbers are "close enough"
   * HasPrefix, HasSuffix
   * IsDirectory

@@ -9,6 +9,7 @@ import (
 func Test(t *testing.T) {
 	Suite(&S{})
 	Suite(&Numeric{})
+	Suite(&Time{})
 	Suite(&ContainerSuite{})
 	Suite(&FileSuite{})
 	Suite(&SamePathLinuxSuite{})
