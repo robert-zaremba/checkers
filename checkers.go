@@ -89,14 +89,20 @@ func (checker *isEmptyChecker) Check(params []interface{}, names []string) (resu
 
 	objValue := reflect.ValueOf(value)
 	switch objValue.Kind() {
-	case reflect.Slice, reflect.Map:
+	case reflect.Array, reflect.Chan, reflect.Map, reflect.Slice, reflect.String:
 		return objValue.Len() == 0, ""
+	case reflect.Ptr:
+		{
+			if objValue.IsNil() {
+				return
+			}
+		}
 	}
 
 	return false, ""
 }
 
-// Empty asserts that the specified object is empty. I.e. nil, "", false, 0 or a slice with len == 0.
+// IsEmpty asserts that the specified object is empty. I.e. nil, "", false, 0 or a slice with len == 0.
 // For example:
 //
 // c.Assert(v, IsEmpty)
