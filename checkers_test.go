@@ -2,21 +2,12 @@ package checkers
 
 import (
 	"errors"
-	. "gopkg.in/check.v1"
 	"os"
+
+	. "gopkg.in/check.v1"
 )
 
 type S struct{}
-
-func (s *S) TestToleranceEquality(c *C) {
-	c.Check(1.0, EqualsWithTolerance, 1.25, 0.5)
-	c.Check(1.0, Not(EqualsWithTolerance), 1.25, 0.05)
-}
-
-func (s *S) TestBounds(c *C) {
-	c.Check(1.0, Between, 0.0, 1.5)
-	c.Check(1.0, Not(Between), 2.0, 2.5)
-}
 
 type x struct {
 	Val string

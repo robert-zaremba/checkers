@@ -2,11 +2,11 @@ package checkers
 
 import (
 	"fmt"
-	"github.com/davecgh/go-spew/spew"
-	gc "gopkg.in/check.v1"
-	"math"
 	"reflect"
 	"strings"
+
+	"github.com/davecgh/go-spew/spew"
+	gc "gopkg.in/check.v1"
 )
 
 type comment struct {
@@ -33,85 +33,6 @@ func (c comment) CheckCommentString() string {
 		return strings.Join(args, " ")
 	}
 	return fmt.Sprint(c.args...)
-}
-
-// -----------------------------------------------------------------------
-func equalWithTolerance(a, b, tolerance float64) bool {
-	return math.Abs(a-b) <= tolerance
-}
-
-func withinBound(value, lower, upper float64) bool {
-	return value >= lower && value <= upper
-}
-
-type equalsWithToleranceChecker struct {
-	*gc.CheckerInfo
-}
-
-func (c *equalsWithToleranceChecker) Check(params []interface{}, names []string) (result bool, error string) {
-	var (
-		ok                            bool
-		obtained, expected, tolerance float64
-		i                             int64
-	)
-	obtained, ok = params[0].(float64)
-	if !ok {
-		i, ok = params[0].(int64)
-		if !ok {
-			return false, "Obtained value is not a float64 or int64"
-		}
-		obtained = float64(i)
-	}
-	expected, ok = params[1].(float64)
-	if !ok {
-		i, ok = params[1].(int64)
-		if !ok {
-			return false, "Expected value is not a float64 or int64"
-		}
-		expected = float64(i)
-	}
-	tolerance, ok = params[2].(float64)
-	if !ok {
-		i, ok = params[2].(int64)
-		if !ok {
-			return false, "Tolerance value is not a float64 or int64"
-		}
-		tolerance = float64(i)
-	}
-
-	return equalWithTolerance(obtained, expected, tolerance), ""
-}
-
-// Check if two numbers are close enough
-var EqualsWithTolerance gc.Checker = &equalsWithToleranceChecker{&gc.CheckerInfo{Name: "EqualsWithTolerance", Params: []string{"obtained", "expected", "tolerance"}}}
-
-// -----------------------------------------------------------------------
-type betweenChecker struct {
-	*gc.CheckerInfo
-}
-
-// Between check if a numeric values is between two other values
-var Between gc.Checker = &betweenChecker{&gc.CheckerInfo{Name: "Between", Params: []string{"obtained", "lower", "upper"}}}
-
-func (c *betweenChecker) Check(params []interface{}, names []string) (result bool, error string) {
-	var (
-		ok                     bool
-		obtained, lower, upper float64
-	)
-	obtained, ok = params[0].(float64)
-	if !ok {
-		return false, "Obtained value is not a float64"
-	}
-	lower, ok = params[1].(float64)
-	if !ok {
-		return false, "Lower value is not a float64"
-	}
-	upper, ok = params[2].(float64)
-	if !ok {
-		return false, "Upper value is not a float64"
-	}
-
-	return withinBound(obtained, lower, upper), ""
 }
 
 // -----------------------------------------------------------------------
