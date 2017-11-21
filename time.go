@@ -108,8 +108,7 @@ func (checker *timeEquals) Check(params []interface{}, names []string) (result b
 
 // TimeEquals checkes if time between obtained and expected is within duration
 var TimeEquals gc.Checker = &timeEquals{
-	&gc.CheckerInfo{Name: "TimeEquals", Params: []string{"obtained", "expected", "max_diff"}},
-}
+	&gc.CheckerInfo{Name: "TimeEquals", Params: []string{"obtained", "expected"}}}
 
 // -----------------------------------------------------------------------
 
@@ -120,7 +119,7 @@ func toTime(a, b interface{}) (time.Time, time.Time, string) {
 	}
 	expected, ok := b.(time.Time)
 	if !ok {
-		return obtained, expected, "expected value type must be time.Time"
+		return obtained, obtained, "expected value type must be time.Time"
 	}
-	return obtained, expected, "expected value type must be time.Time"
+	return obtained, expected, ""
 }

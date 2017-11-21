@@ -22,5 +22,6 @@ It provides additional usefull checkers:
   * Satisfies
   * SliceEquals - checks if 2 slices contain the same elements
   * StrEquals - checks if fmt.Sprint values of objects are equal
+  * TimeEquals - checks if time is the same up to microseconds, useful if some driver or type truncates the nanosecond time accuracy.
 */
 package checkers
