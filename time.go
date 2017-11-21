@@ -69,13 +69,9 @@ type withinDuration struct {
 }
 
 func (checker *withinDuration) Check(params []interface{}, names []string) (result bool, error string) {
-	obtained, ok := params[0].(time.Time)
-	if !ok {
-		return false, "obtained value type must be time.Time"
-	}
-	expected, ok := params[1].(time.Time)
-	if !ok {
-		return false, "expected value type must be time.Time"
+	obtained, expected, errstr := toTime(params[0], params[1])
+	if errstr != "" {
+		return false, errstr
 	}
 	maxDiff, ok := params[2].(time.Duration)
 	if !ok {
@@ -85,10 +81,46 @@ func (checker *withinDuration) Check(params []interface{}, names []string) (resu
 	if dt >= -maxDiff && dt <= maxDiff {
 		return true, ""
 	}
-	return false, "" //fmt.Sprintf("Too big time difference: %v,  %v", dt)
+	return false, ""
 }
 
 // WithinDuration checkes if time between obtained and expected is within duration
 var WithinDuration gc.Checker = &withinDuration{
-	&gc.CheckerInfo{Name: "WithinDuration", Params: []string{"obtained", "expected", "max_diff"}},
+	&gc.CheckerInfo{Name: "WithinDuration", Params: []string{"obtained", "expected", "max_diff"}}}
+
+// -----------------------------------------------------------------------
+type timeEquals struct {
+	*gc.CheckerInfo
+}
+
+func (checker *timeEquals) Check(params []interface{}, names []string) (result bool, errstr string) {
+	obtained, expected, errstr := toTime(params[0], params[1])
+	if errstr != "" {
+		return false, errstr
+	}
+	maxDiff := time.Microsecond
+	dt := expected.Sub(obtained)
+	if dt >= -maxDiff && dt <= maxDiff {
+		return true, ""
+	}
+	return false, ""
+}
+
+// TimeEquals checkes if time between obtained and expected is within duration
+var TimeEquals gc.Checker = &timeEquals{
+	&gc.CheckerInfo{Name: "TimeEquals", Params: []string{"obtained", "expected", "max_diff"}},
+}
+
+// -----------------------------------------------------------------------
+
+func toTime(a, b interface{}) (time.Time, time.Time, string) {
+	obtained, ok := a.(time.Time)
+	if !ok {
+		return obtained, obtained, "obtained value type must be time.Time"
+	}
+	expected, ok := b.(time.Time)
+	if !ok {
+		return obtained, expected, "expected value type must be time.Time"
+	}
+	return obtained, expected, "expected value type must be time.Time"
 }
