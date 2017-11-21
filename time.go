@@ -86,7 +86,6 @@ func (checker *withinDuration) Check(params []interface{}, names []string) (resu
 		return true, ""
 	}
 	return false, "" //fmt.Sprintf("Too big time difference: %v,  %v", dt)
-
 }
 
 // WithinDuration checkes if time between obtained and expected is within duration
