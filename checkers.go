@@ -26,7 +26,7 @@ func CommentSpew(args ...interface{}) gc.CommentInterface {
 
 func (c comment) CheckCommentString() string {
 	if c.isSpew {
-		args := make([]string, len(c.args), len(c.args))
+		args := make([]string, len(c.args))
 		for i := range c.args {
 			args[i] = spew.Sdump(c.args[i])
 		}
@@ -40,9 +40,10 @@ type isTrueChecker struct {
 	*gc.CheckerInfo
 }
 
+// IsTrue checks if value == true
 // For example:
 //
-// c.Assert(v, IsTrue)
+//	c.Assert(v, IsTrue)
 var IsTrue gc.Checker = &isTrueChecker{
 	&gc.CheckerInfo{Name: "IsTrue", Params: []string{"value"}},
 }
@@ -52,14 +53,15 @@ func (checker *isTrueChecker) Check(params []interface{}, names []string) (resul
 }
 
 // -----------------------------------------------------------------------
-// IsFalse checker.
+
 type isFalseChecker struct {
 	*gc.CheckerInfo
 }
 
+// IsFalse checks if value == false
 // For example:
 //
-// c.Assert(v, IsFalse)
+//	c.Assert(v, IsFalse)
 var IsFalse gc.Checker = &isFalseChecker{
 	&gc.CheckerInfo{Name: "IsFalse", Params: []string{"value"}},
 }
