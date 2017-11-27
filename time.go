@@ -69,9 +69,9 @@ type withinDuration struct {
 }
 
 func (checker *withinDuration) Check(params []interface{}, names []string) (result bool, error string) {
-	obtained, expected, errstr := toTime(params[0], params[1])
-	if errstr != "" {
-		return false, errstr
+	obtained, expected, ok, errstr := toTime(params[0], params[1])
+	if ok || errstr != "" {
+		return ok, errstr
 	}
 	maxDiff, ok := params[2].(time.Duration)
 	if !ok {
@@ -94,9 +94,9 @@ type timeEquals struct {
 }
 
 func (checker *timeEquals) Check(params []interface{}, names []string) (result bool, errstr string) {
-	obtained, expected, errstr := toTime(params[0], params[1])
-	if errstr != "" {
-		return false, errstr
+	obtained, expected, ok, errstr := toTime(params[0], params[1])
+	if ok || errstr != "" {
+		return ok, errstr
 	}
 	maxDiff := time.Microsecond
 	dt := expected.Sub(obtained)
@@ -112,14 +112,28 @@ var TimeEquals gc.Checker = &timeEquals{
 
 // -----------------------------------------------------------------------
 
-func toTime(a, b interface{}) (time.Time, time.Time, string) {
-	obtained, ok := a.(time.Time)
-	if !ok {
-		return obtained, obtained, "obtained value type must be time.Time"
+func toTime(a, b interface{}) (time.Time, time.Time, bool, string) {
+	obtained := time.Time{}
+
+	switch v := a.(type) {
+	case time.Time:
+		expected, ok := b.(time.Time)
+		if !ok {
+			return obtained, obtained, false, "expected value type must be time.Time"
+		}
+		return v, expected, false, ""
+	case *time.Time:
+		expected, ok := b.(*time.Time)
+		if !ok {
+			return obtained, obtained, false, "expected value type must be *time.Time"
+		}
+		if v == nil && expected == nil {
+			return obtained, obtained, true, ""
+		}
+		if v != nil && expected != nil {
+			return *v, *expected, false, ""
+		}
+		return obtained, obtained, false, "comparing nil value with non-nil"
 	}
-	expected, ok := b.(time.Time)
-	if !ok {
-		return obtained, obtained, "expected value type must be time.Time"
-	}
-	return obtained, expected, ""
+	return obtained, obtained, false, "expected and obtained value type must be time.Time or *time.Time"
 }
