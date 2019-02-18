@@ -122,3 +122,31 @@ func (s *S) TestHasSuffix(c *C) {
 	c.Assert("foo bar", HasSuffix, "bar")
 	c.Assert("foo bar", Not(HasSuffix), "omg")
 }
+
+func (s *S) TestErrorContains(c *C) {
+	c.Check(nil, Not(ErrorContains), "")
+	c.Check(nil, Not(ErrorContains), "nil")
+
+	var err error = nil
+	c.Check(err, Not(ErrorContains), "")
+	c.Check(err, Not(ErrorContains), "nil")
+
+	err = errors.New("Bad things happened")
+	c.Check(err, Not(ErrorContains), "error")
+	c.Check(err, Not(ErrorContains), "Error")
+	c.Check(err, Not(ErrorContains), "bad", Comment("Case sensitivity should work"))
+	c.Check(err, ErrorContains, "Bad things happened")
+	c.Check(err, ErrorContains, "Bad")
+	c.Check(err, ErrorContains, " things ")
+
+	// check multiline
+	err = errors.New(`33:// FlagValidate runs flag checkers
+34:func FlagValidate(positionalArgs string, checkers ...Checker) {
+40:     for _, c := range checkers {`)
+
+	c.Check(err, Not(ErrorContains), "error")
+	c.Check(err, Not(ErrorContains), "Error")
+	c.Check(err, ErrorContains, "FlagValidate(positionalArgs string")
+	c.Check(err, ErrorContains, "{")
+	c.Check(err, ErrorContains, "40:")
+}

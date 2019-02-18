@@ -210,3 +210,35 @@ func (checker *hasSuffixChecker) Check(params []interface{}, names []string) (re
 
 	return false, "Obtained value is not a string and has no .String()"
 }
+
+// -----------------------------------------------------------------------
+type errorContains struct {
+	*gc.CheckerInfo
+}
+
+// ErrorContains checks if the error message (output of the .String() method)
+// contains the given string.
+var ErrorContains gc.Checker = &errorContains{
+	&gc.CheckerInfo{Name: "ErrorContains", Params: []string{"obtained", "expected"}},
+}
+
+type errorI interface {
+	Error() string
+}
+
+func (checker *errorContains) Check(params []interface{}, names []string) (result bool, error string) {
+	expected, ok := params[1].(string)
+	if !ok {
+		return false, "expected must be a string"
+	}
+
+	if params[0] == nil {
+		return false, "obtained nil"
+	}
+	err, isErr := params[0].(errorI)
+	if !isErr {
+		return false, "Obtained value doesn't implement error interface"
+	}
+	msg := err.Error()
+	return strings.Contains(msg, expected), ""
+}
