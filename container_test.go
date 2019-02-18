@@ -86,32 +86,32 @@ func (s *ContainerSuite) TestMapEquals(c *C) {
 	c.Check(map[int]Point{1: {1, 2}, 2: {1, 2}}, Not(MapEquals), map[int]Point{1: {1, 2}})
 }
 
-func (s *ContainerSuite) TestSameContents(c *C) {
+func (s *ContainerSuite) TestSameContent(c *C) {
 	//// positive cases ////
 
 	// same
 	c.Check(
-		[]int{1, 2, 3}, SameContents,
+		[]int{1, 2, 3}, SameContent,
 		[]int{1, 2, 3})
 
 	// empty
 	c.Check(
-		[]int{}, SameContents,
+		[]int{}, SameContent,
 		[]int{})
 
 	// single
 	c.Check(
-		[]int{1}, SameContents,
+		[]int{1}, SameContent,
 		[]int{1})
 
 	// different order
 	c.Check(
-		[]int{1, 2, 3}, SameContents,
+		[]int{1, 2, 3}, SameContent,
 		[]int{3, 2, 1})
 
 	// multiple copies of same
 	c.Check(
-		[]int{1, 1, 2}, SameContents,
+		[]int{1, 1, 2}, SameContent,
 		[]int{2, 1, 1})
 
 	type test struct {
@@ -121,24 +121,24 @@ func (s *ContainerSuite) TestSameContents(c *C) {
 
 	// test structs
 	c.Check(
-		[]test{{"a", 1}, {"b", 2}}, SameContents,
+		[]test{{"a", 1}, {"b", 2}}, SameContent,
 		[]test{{"b", 2}, {"a", 1}})
 
 	//// negative cases ////
 
 	// different contents
 	c.Check(
-		[]int{1, 3, 2, 5}, Not(SameContents),
+		[]int{1, 3, 2, 5}, Not(SameContent),
 		[]int{5, 2, 3, 4})
 
 	// different size slices
 	c.Check(
-		[]int{1, 2, 3}, Not(SameContents),
+		[]int{1, 2, 3}, Not(SameContent),
 		[]int{1, 2})
 
 	// different counts of same items
 	c.Check(
-		[]int{1, 1, 2}, Not(SameContents),
+		[]int{1, 1, 2}, Not(SameContent),
 		[]int{1, 2, 2})
 
 	/// Error cases ///
@@ -147,7 +147,7 @@ func (s *ContainerSuite) TestSameContents(c *C) {
 	// Oddly, there doesn't seem to actually be a way to check for an error from a Checker.
 
 	// different type
-	res, err := SameContents.Check([]interface{}{
+	res, err := SameContent.Check([]interface{}{
 		[]string{"1", "2"},
 		[]int{1, 2},
 	}, []string{})
@@ -155,7 +155,7 @@ func (s *ContainerSuite) TestSameContents(c *C) {
 	c.Check(err, Not(Equals), "")
 
 	// obtained not a slice
-	res, err = SameContents.Check([]interface{}{
+	res, err = SameContent.Check([]interface{}{
 		"test",
 		[]int{1},
 	}, []string{})
@@ -163,7 +163,7 @@ func (s *ContainerSuite) TestSameContents(c *C) {
 	c.Check(err, Not(Equals), "")
 
 	// expected not a slice
-	res, err = SameContents.Check([]interface{}{
+	res, err = SameContent.Check([]interface{}{
 		[]int{1},
 		"test",
 	}, []string{})

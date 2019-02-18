@@ -109,39 +109,39 @@ var MapEquals gc.Checker = &mapEquals{
 
 // -----------------------------------------------------------------------
 
-type sameContents struct {
+type sameContent struct {
 	*gc.CheckerInfo
 }
 
-// SameContents checks that the obtained slice contains all the values (and
+// SameContent checks that the obtained slice contains all the values (and
 // same number of values) of the expected slice and vice versa, without respect
 // to order or duplicates. Uses DeepEquals on mapped contents to compare.
-var SameContents gc.Checker = &sameContents{
-	&gc.CheckerInfo{Name: "SameContents", Params: []string{"obtained", "expected"}},
+var SameContent gc.Checker = &sameContent{
+	&gc.CheckerInfo{Name: "SameContent", Params: []string{"obtained", "expected"}},
 }
 
-func (checker *sameContents) Check(params []interface{}, names []string) (result bool, error string) {
+func (checker *sameContent) Check(params []interface{}, names []string) (result bool, error string) {
 	if len(params) != 2 {
-		return false, "SameContents expects two slice arguments"
+		return false, "SameContent expects two slice arguments"
 	}
 	obtained := params[0]
 	expected := params[1]
 
 	tob := reflect.TypeOf(obtained)
 	if tob.Kind() != reflect.Slice {
-		return false, fmt.Sprintf("SameContents expects the obtained value to be a slice, got %q",
+		return false, fmt.Sprintf("SameContent expects the obtained value to be a slice, got %q",
 			tob.Kind())
 	}
 
 	texp := reflect.TypeOf(expected)
 	if texp.Kind() != reflect.Slice {
-		return false, fmt.Sprintf("SameContents expects the expected value to be a slice, got %q",
+		return false, fmt.Sprintf("SameContent expects the expected value to be a slice, got %q",
 			texp.Kind())
 	}
 
 	if texp != tob {
 		return false, fmt.Sprintf(
-			"SameContents expects two slices of the same type, expected: %q, got: %q",
+			"SameContent expects two slices of the same type, expected: %q, got: %q",
 			texp, tob)
 	}
 
