@@ -106,7 +106,7 @@ func (checker *timeEquals) Check(params []interface{}, names []string) (result b
 	return false, ""
 }
 
-// TimeEquals checkes if time between obtained and expected is within duration
+// TimeEquals checks if time is the same up to microseconds
 var TimeEquals gc.Checker = &timeEquals{
 	&gc.CheckerInfo{Name: "TimeEquals", Params: []string{"obtained", "expected"}}}
 

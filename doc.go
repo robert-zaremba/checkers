@@ -7,8 +7,6 @@ It provides additional usefull checkers:
   * CloseTo - an alias for EqualsWithTolerance
   * IsIn (checks if an element is in a slice/array/string)
   * DoesNotExist - checks if a path exists
-  * DurationLessThan
-  * WithinDuration - checks if an obtained time is not earlier/later than the expected time + duration
   * EqualsWithTolerance - checks if two numbers are "close enough"
   * HasPrefix, HasSuffix
   * IsDirectory
@@ -23,6 +21,8 @@ It provides additional usefull checkers:
   * SliceEquals - checks if 2 slices contain the same elements
   * StrEquals - checks if fmt.Sprint values of objects are equal
   * TimeEquals - checks if time is the same up to microseconds, useful if some driver or type truncates the nanosecond time accuracy.
+  * WithinDuration - checks if an obtained time is not earlier/later than the expected time + duration
+  * DurationLessThan
 
 Furthermore there are two additional CommentInterface implementations:
 
